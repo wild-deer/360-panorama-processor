@@ -134,6 +134,42 @@ def get_user_input():
             else:
                 print("请输入 y 或 n")
     
+    # 获取俯仰角度
+    print("\n俯仰角度设置 - 用于调整视角的上下方向:")
+    print("正值向上看，负值向下看，0度为水平视角")
+    while True:
+        try:
+            pitch_input = input("请输入俯仰角度 (-90到90度，默认0): ").strip()
+            if not pitch_input:
+                pitch_angle = 0
+            else:
+                pitch_angle = float(pitch_input)
+            
+            if -90 <= pitch_angle <= 90:
+                break
+            else:
+                print("俯仰角度必须在-90到90度之间")
+        except ValueError:
+            print("请输入有效的数字")
+    
+    # 询问是否启用垂直翻转功能
+    print("\n垂直翻转功能 - 用于处理倒置拍摄的全景图:")
+    print("如果全景图是倒置拍摄的，启用此功能可以自动翻转")
+    
+    while True:
+        flip_vertical = input("是否启用垂直翻转功能？(y/n，默认n): ").strip().lower()
+        if not flip_vertical:
+            flip_vertical = "n"
+        
+        if flip_vertical in ["y", "yes"]:
+            flip_vertical = True
+            break
+        elif flip_vertical in ["n", "no"]:
+            flip_vertical = False
+            break
+        else:
+            print("请输入 y 或 n")
+    
     # 获取线程数
     recommended = get_recommended_threads()
     while True:
@@ -151,13 +187,13 @@ def get_user_input():
         except ValueError:
             print("请输入有效的数字")
     
-    return input_folder, output_folder, profile, threads, exclude_angle_ranges, enable_exclusion
+    return input_folder, output_folder, profile, threads, exclude_angle_ranges, enable_exclusion, pitch_angle, flip_vertical
 
 def main():
     """主函数"""
     try:
         # 获取用户输入
-        input_folder, output_folder, profile, threads, exclude_angle_ranges, enable_exclusion = get_user_input()
+        input_folder, output_folder, profile, threads, exclude_angle_ranges, enable_exclusion, pitch_angle, flip_vertical = get_user_input()
         
         # 获取性能配置
         perf_config = get_performance_config(profile)
@@ -170,6 +206,11 @@ def main():
         print(f"重叠比例: {perf_config['overlap']*100:.1f}%")
         print(f"输出尺寸: {perf_config['output_size'][0]}x{perf_config['output_size'][1]}")
         print(f"线程数: {threads}")
+        print(f"俯仰角度: {pitch_angle}°")
+        if flip_vertical:
+            print(f"垂直翻转: 启用")
+        else:
+            print(f"垂直翻转: 禁用")
         if enable_exclusion and exclude_angle_ranges:
             print(f"角度排除: 启用，排除范围: {exclude_angle_ranges}")
         else:
@@ -193,7 +234,9 @@ def main():
             out_size=perf_config['output_size'],
             max_workers=threads,
             exclude_angle_ranges=exclude_angle_ranges,
-            enable_exclusion=enable_exclusion
+            enable_angle_exclusion=enable_exclusion,
+            pitch_angle=pitch_angle,
+            flip_vertical=flip_vertical
         )
         
         print(f"\n处理完成！结果保存在: {output_folder}")

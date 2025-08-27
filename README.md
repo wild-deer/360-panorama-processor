@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
 > 🚀 **一个高性能的多线程全景图片批量处理工具**  
-> 专为全景摄影师、VR内容创作者和房地产展示设计
+> 为了便于将360图片处理为高斯泼溅需要的图片格式
 
 ---
 
